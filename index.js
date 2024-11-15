@@ -1,18 +1,18 @@
-const puppeteer = require('puppeteer');
-const xlsx = require('xlsx');
+const puppeteer = require('puppeteer');   // se utiliza para scraping y automatizar navegadores
+const xlsx = require('xlsx'); // crea y manipula xlsx desde node.
 
 (async () => {
   const browser = await puppeteer.launch({ headless: true });
 
   // Función para extraer datos de PYPL
   const getPYPLData = async () => {
-    const page = await browser.newPage();
+    const page = await browser.newPage();  // lanza una instancia del navegador en modo headless (sin interfaz gráfica visible).
     try {
-      await page.goto('https://pypl.github.io/PYPL.html', { waitUntil: 'domcontentloaded' });
-      await page.waitForSelector('table', { timeout: 60000 }); // Ajusta el selector según el DOM actual
-
+      await page.goto('https://pypl.github.io/PYPL.html', { waitUntil: 'domcontentloaded' }); // Web sobre la que voy a extraer datos
+      await page.waitForSelector('table', { timeout: 60000 }); // Ajusta el selector según el DOM actual, espera a que aparezca un elemento tabla
+        // se comienza con la evaluacion de datos y para ejecutar código JavaScript en el contexto del navegador.
       const data = await page.evaluate(() => {
-        const rows = Array.from(document.querySelectorAll('table tbody tr'));
+        const rows = Array.from(document.querySelectorAll('table tbody tr'));  // encuentra la tabla, identifica todas las filas y luego extrae los datos.
         return rows.map((row) => {
           const cols = row.querySelectorAll('td');
           if (cols.length >= 2) {
@@ -21,7 +21,7 @@ const xlsx = require('xlsx');
               language: cols[2].innerText.trim(),
             };
           }
-        }).filter(item => item !== undefined);
+        }).filter(item => item !== undefined);  // filtra los elementos undefined
       });
 
       await page.close();
